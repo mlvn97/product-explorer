@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -413,7 +415,12 @@ fun ProductListItem(
   onClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
-  Card(modifier = modifier.fillMaxWidth()) {
+  Card(
+    modifier = modifier.fillMaxWidth(),
+    shape = MaterialTheme.shapes.large,
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+  ) {
     Column(modifier = Modifier.padding(16.dp)) {
       Text(
         text = product.title,
@@ -462,14 +469,15 @@ fun ProductCatalogScreen(
   modifier: Modifier = Modifier
 ) {
   LazyColumn(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     contentPadding = PaddingValues(16.dp), // Ajoute une marge intérieure autour du contenu de la liste
     verticalArrangement = Arrangement.spacedBy(16.dp) // Ajoute un espace vertical entre les éléments de la liste.
   ) {
     item {
       Text(
         text = "Catalogue produits",
-        style = MaterialTheme.typography.headlineMedium
+        style = MaterialTheme.typography.headlineMedium,
+        color = MaterialTheme.colorScheme.primary
       )
     }
 
