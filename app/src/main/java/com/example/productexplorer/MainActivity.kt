@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -434,6 +436,25 @@ fun ProductListItem(
   }
 }
 
+fun sampleCategories(): List<String> {
+  return listOf("Smartphones", "Audio", "Wearables", "Maison")
+}
+
+@Composable
+fun CategoryRow(
+  categories: List<String>,
+  modifier: Modifier = Modifier
+) {
+  LazyRow(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    items(categories) { category ->
+      CategoryChip(label = category)
+    }
+  }
+}
+
 @Composable
 fun ProductCatalogScreen(
   products: List<ProductUI>,
@@ -450,6 +471,22 @@ fun ProductCatalogScreen(
         text = "Catalogue produits",
         style = MaterialTheme.typography.headlineMedium
       )
+    }
+
+    item {
+      Text(
+        text = "Explorez une sélection de produits disponibles localement.",
+        style = MaterialTheme.typography.bodyMedium
+      )
+    }
+
+    item {
+      CategoryRow(categories = sampleCategories())
+    }
+
+    items(items = products, key = {product -> product.id}) {
+        product ->
+      ProductListItem(product = product, onClick = {onProductClick(product)})
     }
   }
 }
@@ -545,6 +582,17 @@ fun HomePreview() {
     ProductHomeScreen(
       featuredProduct = sampleProduct(),
       onFeaturedProductClick = {}
+    )
+  }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductCatalogScreenPreview() {
+  ProductExplorerTheme {
+    ProductCatalogScreen(
+      products = sampleProducts(),
+      onProductClick = {}
     )
   }
 }
