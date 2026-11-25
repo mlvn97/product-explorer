@@ -5,14 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -38,9 +41,9 @@ class MainActivity : ComponentActivity() {
     setContent {
       ProductExplorerTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          ProductHomeScreen(
-            featuredProduct = sampleProduct(),
-            onFeaturedProductClick = {},
+          ProductCatalogScreen(
+            products = sampleProducts(),
+            onProductClick = {},
             modifier = Modifier.padding(innerPadding)
           )
         }
@@ -50,6 +53,7 @@ class MainActivity : ComponentActivity() {
 }
 
 data class ProductUI(
+  val id: Int,
   val title: String,
   val brand: String,
   val category: String,
@@ -237,6 +241,7 @@ fun ProductHomeScreen(
 
 fun sampleProduct(): ProductUI {
   return ProductUI(
+    id = 1,
     title = "Smartphone Toto X",
     brand = "TotoTech",
     category = "Smartphones",
@@ -400,8 +405,58 @@ fun ProductDetailScreen(
   }
 }
 
+@Composable
+fun ProductListItem(
+  product: ProductUI,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  Card(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Text(
+        text = product.title,
+        style = MaterialTheme.typography.titleMedium
+      )
+      Text(
+        text = product.brand,
+        style = MaterialTheme.typography.bodyMedium
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+      Text(
+        text = "${product.price} € • ★ ${product.rating}",
+        style = MaterialTheme.typography.bodyMedium
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+      Button(onClick = onClick) {
+        Text(text = "Voir le produit")
+      }
+    }
+  }
+}
+
+@Composable
+fun ProductCatalogScreen(
+  products: List<ProductUI>,
+  onProductClick: (ProductUI) -> Unit,
+  modifier: Modifier = Modifier
+) {
+  LazyColumn(
+    modifier = modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp), // Ajoute une marge intérieure autour du contenu de la liste
+    verticalArrangement = Arrangement.spacedBy(16.dp) // Ajoute un espace vertical entre les éléments de la liste.
+  ) {
+    item {
+      Text(
+        text = "Catalogue produits",
+        style = MaterialTheme.typography.headlineMedium
+      )
+    }
+  }
+}
+
 fun sampleProductOutOfStock(): ProductUI {
   return ProductUI(
+    id = 1,
     title = "Casque Audio Pulse",
     brand = "SoundPeak",
     category = "Audio",
@@ -416,13 +471,58 @@ fun sampleProductOutOfStock(): ProductUI {
   )
 }
 
+fun sampleProducts(): List<ProductUI> {
+  return listOf(
+    sampleProduct(),
+    ProductUI(
+      id = 2,
+      title = "Casque Audio Pulse",
+      brand = "SoundPeak",
+      category = "Audio",
+      description = "Un casque confortable pour écouter de la musique et travailler dans de bonnes conditions.",
+      price = 129.99,
+      discountPercentage = 8.0,
+      rating = 4.2,
+      stock = 0,
+      warrantyInformation = "Garantie constructeur : 1 an",
+      shippingInformation = "Produit temporairement indisponible"
+    ),
+    ProductUI(
+      id = 3,
+      title = "Montre Connectée FitTime",
+      brand = "FitTime",
+      category = "Wearables",
+      description = "Une montre connectée simple pour suivre l’activité quotidienne.",
+      price = 89.99,
+      discountPercentage = 15.0,
+      rating = 4.4,
+      stock = 18,
+      warrantyInformation = "Garantie constructeur : 2 ans",
+      shippingInformation = "Livraison estimée : 2 à 4 jours ouvrés"
+    ),
+    ProductUI(
+      id = 4,
+      title = "Enceinte Mini Boom",
+      brand = "BoomSound",
+      category = "Audio",
+      description = "Une enceinte compacte pour écouter de la musique à la maison ou en déplacement.",
+      price = 59.99,
+      discountPercentage = 5.0,
+      rating = 4.1,
+      stock = 52,
+      warrantyInformation = "Garantie constructeur : 1 an",
+      shippingInformation = "Livraison estimée : 3 jours ouvrés"
+    )
+  )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
   ProductExplorerTheme {
-    ProductHomeScreen(
-        featuredProduct = sampleProduct(),
-        onFeaturedProductClick = {}
+    ProductDetailScreen(
+        product = sampleProduct(),
+        onAddToCartClick = {}
     )
   }
 }
@@ -434,6 +534,17 @@ fun ProductDetailScreenOutOfStockPreview() {
     ProductDetailScreen(
       product = sampleProductOutOfStock(),
       onAddToCartClick = {}
+    )
+  }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomePreview() {
+  ProductExplorerTheme {
+    ProductHomeScreen(
+      featuredProduct = sampleProduct(),
+      onFeaturedProductClick = {}
     )
   }
 }
