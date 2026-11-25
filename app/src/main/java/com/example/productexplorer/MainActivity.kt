@@ -160,12 +160,14 @@ fun ProductQuickInfoRow(
 fun CategoryChip(label: String, modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier,
-    shape = MaterialTheme.shapes.medium,
-    tonalElevation = 2.dp) {
+    shape = MaterialTheme.shapes.extraLarge,
+    color = MaterialTheme.colorScheme.secondary,
+    contentColor = MaterialTheme.colorScheme.onPrimary
+  ) {
     Text(
       text = label,
-      modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-      style = MaterialTheme.typography.bodyMedium
+      modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+      style = MaterialTheme.typography.labelLarge
     )
   }
 }
@@ -424,16 +426,19 @@ fun ProductListItem(
     Column(modifier = Modifier.padding(16.dp)) {
       Text(
         text = product.title,
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.onSurface
       )
       Text(
         text = product.brand,
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.secondary
       )
       Spacer(modifier = Modifier.height(8.dp))
       Text(
         text = "${product.price} € • ★ ${product.rating}",
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary
       )
       Spacer(modifier = Modifier.height(8.dp))
       Button(onClick = onClick) {
@@ -598,6 +603,17 @@ fun HomePreview() {
 @Composable
 fun ProductCatalogScreenPreview() {
   ProductExplorerTheme {
+    ProductCatalogScreen(
+      products = sampleProducts(),
+      onProductClick = {}
+    )
+  }
+}
+
+@Preview(showBackground = true, name = "Catalogue - Dark Theme")
+@Composable
+fun ProductCatalogScreenDarkPreview() {
+  ProductExplorerTheme(darkTheme = true) {
     ProductCatalogScreen(
       products = sampleProducts(),
       onProductClick = {}
