@@ -7,8 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -18,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,9 +36,9 @@ class MainActivity : ComponentActivity() {
     setContent {
       ProductExplorerTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          ProductDetailScreen(
-            product = sampleProduct(),
-            onAddToCartClick = {},
+          ProductHomeScreen(
+            featuredProduct = sampleProduct(),
+            onFeaturedProductClick = {},
             modifier = Modifier.padding(innerPadding)
           )
         }
@@ -56,6 +59,51 @@ data class ProductUI(
   val warrantyInformation: String,
   val shippingInformation: String
 )
+
+@Composable
+fun HomeHeader(modifier: Modifier = Modifier) {
+  Column(modifier = modifier) {
+    Text(
+      text = "Product Explorer",
+      style = MaterialTheme.typography.headlineMedium
+    )
+    Text(
+      text = "Découvrez les produits du moment",
+      style = MaterialTheme.typography.bodyMedium
+    )
+  }
+}
+
+@Composable
+fun SearchPreviewBar(modifier: Modifier = Modifier) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = MaterialTheme.shapes.medium,
+    tonalElevation = 2.dp
+  ) {
+    Text(
+      text = "Rechercher un produit...",
+      modifier = Modifier.padding(16.dp),
+      style = MaterialTheme.typography.bodyMedium
+    )
+  }
+}
+
+
+
+@Composable
+fun ProductHomeScreen(
+  featuredProduct: ProductUI,
+  onFeaturedProductClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+    HomeHeader()
+    Spacer(modifier = Modifier.height(24.dp))
+    SearchPreviewBar()
+    Spacer(modifier = Modifier.height(24.dp))
+  }
+}
 
 fun sampleProduct(): ProductUI {
   return ProductUI(
@@ -242,9 +290,9 @@ fun sampleProductOutOfStock(): ProductUI {
 @Composable
 fun Preview() {
   ProductExplorerTheme {
-    ProductDetailScreen(
-        product = sampleProduct(),
-        onAddToCartClick = {}
+    ProductHomeScreen(
+        featuredProduct = sampleProduct(),
+        onFeaturedProductClick = {}
     )
   }
 }
