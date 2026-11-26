@@ -50,8 +50,9 @@ class MainActivity : ComponentActivity() {
     setContent {
       ProductExplorerTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          ProductCatalogScreen(
+          ProductCatalogContainer(
             products = sampleProducts(),
+            categories = sampleCategories(),
             onProductClick = {},
             modifier = Modifier.padding(innerPadding)
           )
@@ -567,7 +568,7 @@ fun ProductCatalogScreen(
     }
 
     item {
-      CategoryRow(categories = sampleCategories())
+      CategoryRow(categories = categories)
     }
 
     item {
@@ -592,18 +593,18 @@ fun ProductCatalogScreen(
 
     item {
       Text(
-        text = "${filteredProducts.size} produit(s) affiché(s)",
+        text = "${products.size} produit(s) affiché(s)",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurface
       )
     }
 
-    items(items = filteredProducts, key = {product -> product.id}) {product ->
+    items(items = products, key = {product -> product.id}) {product ->
       ProductListItem(
         product = product,
         isFavorite = favoriteProductIds.contains(product.id),
-        onFavoriteClick = { toggleFavorite(product.id) },
-        onClick = {onProductClick(product)})
+        onFavoriteClick = { onFavoriteClick(product.id) },
+        onClick = { onProductClick(product)} )
     }
   }
 }
@@ -670,45 +671,13 @@ fun sampleProducts(): List<ProductUI> {
   )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Catalogue - Light Theme")
 @Composable
-fun Preview() {
-  ProductExplorerTheme {
-    ProductDetailScreen(
-        product = sampleProduct(),
-        onAddToCartClick = {}
-    )
-  }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductDetailScreenOutOfStockPreview() {
-  ProductExplorerTheme {
-    ProductDetailScreen(
-      product = sampleProductOutOfStock(),
-      onAddToCartClick = {}
-    )
-  }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-  ProductExplorerTheme {
-    ProductHomeScreen(
-      featuredProduct = sampleProduct(),
-      onFeaturedProductClick = {}
-    )
-  }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductCatalogScreenPreview() {
-  ProductExplorerTheme {
-    ProductCatalogScreen(
+fun ProductCatalogContainerLightPreview() {
+  ProductExplorerTheme(darkTheme = false) {
+    ProductCatalogContainer(
       products = sampleProducts(),
+      categories = sampleCategories(),
       onProductClick = {}
     )
   }
@@ -716,10 +685,11 @@ fun ProductCatalogScreenPreview() {
 
 @Preview(showBackground = true, name = "Catalogue - Dark Theme")
 @Composable
-fun ProductCatalogScreenDarkPreview() {
+fun ProductCatalogContainerDarkPreview() {
   ProductExplorerTheme(darkTheme = true) {
-    ProductCatalogScreen(
+    ProductCatalogContainer(
       products = sampleProducts(),
+      categories = sampleCategories(),
       onProductClick = {}
     )
   }
