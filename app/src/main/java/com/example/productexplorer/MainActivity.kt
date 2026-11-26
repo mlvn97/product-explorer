@@ -419,6 +419,8 @@ fun ProductDetailScreen(
 @Composable
 fun ProductListItem(
   product: ProductUI,
+  isFavorite: Boolean,
+  onFavoriteClick: () -> Unit,
   onClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -448,6 +450,9 @@ fun ProductListItem(
       Spacer(modifier = Modifier.height(8.dp))
       Button(onClick = onClick) {
         Text(text = "Voir le produit")
+      }
+      Button(onClick = onFavoriteClick) {
+        Text(text = if (isFavorite) "Retirer des favoris" else "Ajouter aux favoris")
       }
     }
   }
@@ -486,6 +491,10 @@ fun ProductCatalogScreen(
     mutableStateOf(false)
   }
 
+  var favoriteProductIds by rememberSaveable {
+    mutableStateOf(listOf<Int>())
+  }
+
   val filteredProducts = remember(products, searchQuery) {
     products.filter { p ->
       val matchesSearch = p.title.contains(searchQuery, ignoreCase = true) ||
@@ -496,6 +505,12 @@ fun ProductCatalogScreen(
       matchesSearch && matchesStock
     }
   }
+
+  fun toggleFavorite(productId: Int) {
+    favoriteProductIds = if (favoriteProductIds.contains(productId))
+      favoriteProductIds - productId else favoriteProductIds + productId
+  }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     contentPadding = PaddingValues(16.dp), // Ajoute une marge intérieure autour du contenu de la liste
@@ -512,7 +527,8 @@ fun ProductCatalogScreen(
     item {
       Text(
         text = "Explorez une sélection de produits disponibles localement.",
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface
       )
     }
 
@@ -543,13 +559,17 @@ fun ProductCatalogScreen(
     item {
       Text(
         text = "${filteredProducts.size} produit(s) affiché(s)",
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface
       )
     }
 
-    items(items = filteredProducts, key = {product -> product.id}) {
-        product ->
-      ProductListItem(product = product, onClick = {onProductClick(product)})
+    items(items = filteredProducts, key = {product -> product.id}) {product ->
+      ProductListItem(
+        product = product,
+        isFavorite = favoriteProductIds.contains(product.id),
+        onFavoriteClick = { toggleFavorite(product.id) },
+        onClick = {onProductClick(product)})
     }
   }
 }
