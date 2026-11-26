@@ -31,6 +31,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -473,6 +478,24 @@ fun ProductCatalogScreen(
   onProductClick: (ProductUI) -> Unit,
   modifier: Modifier = Modifier
 ) {
+  var searchQuery by rememberSaveable {
+    mutableStateOf("")
+  }
+
+  var showOnlyInStock by rememberSaveable {
+    mutableStateOf(false)
+  }
+
+  val filteredProducts = remember(products, searchQuery) {
+    products.filter { p ->
+      val matchesSearch = p.title.contains(searchQuery, ignoreCase = true) ||
+          p.brand.contains(searchQuery, ignoreCase = true) ||
+          p.category.contains(searchQuery, ignoreCase = true)
+      val matchesStock = !showOnlyInStock || p.stock > 0
+
+      matchesSearch && matchesStock
+    }
+  }
   LazyColumn(
     modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     contentPadding = PaddingValues(16.dp), // Ajoute une marge intérieure autour du contenu de la liste
@@ -497,7 +520,34 @@ fun ProductCatalogScreen(
       CategoryRow(categories = sampleCategories())
     }
 
-    items(items = products, key = {product -> product.id}) {
+    item {
+      OutlinedTextField(
+        value = searchQuery,
+        onValueChange = { newValue -> searchQuery = newValue },
+        label = {
+          Text(text = "Rechercher un produit")
+        },
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+
+    item {
+      Button(onClick = { showOnlyInStock = !showOnlyInStock }) {
+        Text(
+          text = if (showOnlyInStock)
+            "Afficher tous les produits" else "Afficher uniquement les produits en stock"
+        )
+      }
+    }
+
+    item {
+      Text(
+        text = "${filteredProducts.size} produit(s) affiché(s)",
+        style = MaterialTheme.typography.bodyMedium
+      )
+    }
+
+    items(items = filteredProducts, key = {product -> product.id}) {
         product ->
       ProductListItem(product = product, onClick = {onProductClick(product)})
     }
