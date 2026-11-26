@@ -478,8 +478,9 @@ fun CategoryRow(
 }
 
 @Composable
-fun ProductCatalogScreen(
+fun ProductCatalogContainer(
   products: List<ProductUI>,
+  categories: List<String>,
   onProductClick: (ProductUI) -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -511,6 +512,39 @@ fun ProductCatalogScreen(
       favoriteProductIds - productId else favoriteProductIds + productId
   }
 
+  ProductCatalogScreen(
+    products = filteredProducts,
+    categories = categories,
+    searchQuery = searchQuery,
+    onSearchQueryChange = { newValue ->
+      searchQuery = newValue
+    },
+    showOnlyInStock = showOnlyInStock,
+    onToggleStockFilter = {
+      showOnlyInStock = !showOnlyInStock
+    },
+    favoriteProductIds = favoriteProductIds,
+    onFavoriteClick = { productId ->
+      toggleFavorite(productId)
+    },
+    onProductClick = onProductClick,
+    modifier = modifier
+  )
+}
+
+@Composable
+fun ProductCatalogScreen(
+  products: List<ProductUI>,
+  categories: List<String>,
+  searchQuery: String,
+  onSearchQueryChange: (String) -> Unit,
+  showOnlyInStock: Boolean,
+  onToggleStockFilter: () -> Unit,
+  favoriteProductIds: List<Int>,
+  onFavoriteClick: (Int) -> Unit,
+  onProductClick: (ProductUI) -> Unit,
+  modifier: Modifier = Modifier
+) {
   LazyColumn(
     modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     contentPadding = PaddingValues(16.dp), // Ajoute une marge intérieure autour du contenu de la liste
@@ -539,7 +573,7 @@ fun ProductCatalogScreen(
     item {
       OutlinedTextField(
         value = searchQuery,
-        onValueChange = { newValue -> searchQuery = newValue },
+        onValueChange = onSearchQueryChange,
         label = {
           Text(text = "Rechercher un produit")
         },
@@ -548,7 +582,7 @@ fun ProductCatalogScreen(
     }
 
     item {
-      Button(onClick = { showOnlyInStock = !showOnlyInStock }) {
+      Button(onClick = onToggleStockFilter) {
         Text(
           text = if (showOnlyInStock)
             "Afficher tous les produits" else "Afficher uniquement les produits en stock"
